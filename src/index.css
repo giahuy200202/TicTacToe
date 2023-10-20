@@ -89,3 +89,8 @@
     margin-left: 20px;
   }
   
+  .current-move-text{
+    font-family: Arial;
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
