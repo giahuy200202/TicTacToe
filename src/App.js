@@ -19,7 +19,7 @@ function Board({ xIsNext, squares, onPlay }) {
     } else {
       nextSquares[i] = "O";
     }
-    onPlay(nextSquares);
+    onPlay(nextSquares, i, nextSquares[i]);
   }
 
   const winner = calculateWinner(squares);
@@ -49,14 +49,24 @@ function Board({ xIsNext, squares, onPlay }) {
 }
 
 export default function Game() {
+  const [isAscending, setIsAscending] = useState(true);
   const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [positionWithPlayerHistory, setPositionWithPlayerHistory] = useState(
+    []
+  );
+
   const [currentMove, setCurrentMove] = useState(0);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
-  function handlePlay(nextSquares) {
+  function handlePlay(nextSquares, index, player) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    const nextPositionWithPlayerHistory = [
+      ...positionWithPlayerHistory.slice(0, currentMove),
+      { index: index, player: player },
+    ];
     setHistory(nextHistory);
+    setPositionWithPlayerHistory(nextPositionWithPlayerHistory);
     setCurrentMove(nextHistory.length - 1);
   }
 
@@ -66,15 +76,21 @@ export default function Game() {
 
   const moves = history.map((squares, move) => {
     let description;
+    let moreInfoPositionAndPlayer;
     if (move > 0) {
-      description = "Go to move #" + move;
+      moreInfoPositionAndPlayer= `at position (${parseInt(
+        positionWithPlayerHistory[move - 1].index / 3
+      )}, ${positionWithPlayerHistory[move - 1].index % 3}) with player ${
+        positionWithPlayerHistory[move - 1].player
+      }`;
+      description = `Go to move #${move} at position ${moreInfoPositionAndPlayer}`;
     } else {
       description = "Go to game start";
     }
     return (
       <li key={move}>
         {currentMove === move ? (
-          <div className="current-move-text">{`You are at move #${move}`}</div>
+          <div className="current-move-text">{`You are at move #${move} ${moreInfoPositionAndPlayer}`}</div>
         ) : (
           <button onClick={() => jumpTo(move)}>{description}</button>
         )}
@@ -86,9 +102,17 @@ export default function Game() {
     <div className="game">
       <div className="game-board">
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <button
+          style={{ marginTop: "1rem" }}
+          onClick={() => setIsAscending((prevState) => !prevState)}
+        >
+          {isAscending
+            ? "Moves with descending order"
+            : "Moves with ascending order"}
+        </button>
       </div>
       <div className="game-info">
-        <ol>{moves}</ol>
+        <ol>{isAscending ? moves : moves.reverse()}</ol>
       </div>
     </div>
   );
