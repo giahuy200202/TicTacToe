@@ -92,14 +92,14 @@ export default function Game() {
 
   const moves = history.map((squares, move) => {
     let description;
-    let moreInfoPositionAndPlayer;
+    let moreInfoPositionAndPlayer = '';
     if (move > 0) {
       moreInfoPositionAndPlayer = `at position (${parseInt(
         positionWithPlayerHistory[move - 1].index / 3
       )}, ${positionWithPlayerHistory[move - 1].index % 3}) with player ${
         positionWithPlayerHistory[move - 1].player
       }`;
-      description = `Go to move #${move} at position ${moreInfoPositionAndPlayer}`;
+      description = `Go to move #${move} ${moreInfoPositionAndPlayer}`;
     } else {
       description = "Go to game start";
     }
